@@ -1,2 +1,7 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<article>
+	<h1>Welcome to Fearless</h1>
+	<strong>Overcome your Fear Today!</strong>
+	<footer>
+		<a role="button" href="/fears">Start Now</a>
+	</footer>
+</article>
