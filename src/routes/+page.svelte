@@ -1,6 +1,8 @@
 <article>
 	<h1>Welcome to Fearless</h1>
-	<strong>Overcome your Fear Today!</strong>
+	<p>
+		<strong>Overcome your Fear Today!</strong>
+	</p>
 	<footer>
 		<a role="button" href="/fears">Start Now</a>
 	</footer>
