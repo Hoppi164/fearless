@@ -1,0 +1,11 @@
+{
+	"index": 1,
+	"slug": "fear-of-dogs",
+	"title": "Cynophobia",
+	"subtitle": "Fear Of Dogs",
+	"plan": [
+		{ "type": "word", "data": "Woof" },
+		{ "type": "word", "data": "Bark" },
+		{ "type": "word", "data": "Bite" }
+	]
+}
