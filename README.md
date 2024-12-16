@@ -1,28 +1,30 @@
-# create-svelte
+# Fearless
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This project has been rewritten in Flutter using Dart.
 
-## Creating a project
+## Setting up the project
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. Ensure you have Flutter installed. Follow the instructions on the [official Flutter website](https://flutter.dev/docs/get-started/install) to install Flutter on your machine.
+
+2. Clone the repository:
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+git clone https://github.com/Hoppi164/fearless.git
+cd fearless
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+3. Install dependencies:
 
 ```bash
-npm run dev
+flutter pub get
+```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+## Running the project
+
+To run the project on an emulator or physical device, use the following command:
+
+```bash
+flutter run
 ```
 
 ## Building
@@ -30,9 +32,9 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```bash
-npm run build
+flutter build apk
 ```
 
-You can preview the production build with `npm run preview`.
+You can find the generated APK file in the `build/app/outputs/flutter-apk` directory.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+> To deploy your app, you may need to follow the [official Flutter deployment guide](https://flutter.dev/docs/deployment).
