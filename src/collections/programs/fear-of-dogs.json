@@ -6,6 +6,9 @@
 	"plan": [
 		{ "type": "word", "data": "Woof" },
 		{ "type": "word", "data": "Bark" },
-		{ "type": "word", "data": "Bite" }
+		{ "type": "word", "data": "Bite" },
+		{ "type": "image", "data": "/dog-cartoon-0.webp" },
+		{ "type": "image", "data": "/dog-cartoon-1.webp" },
+		{ "type": "image", "data": "/dog-cartoon-2.webp" }
 	]
 }

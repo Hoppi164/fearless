@@ -30,6 +30,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@picocss/pico": "^1.5.7"
+		"@picocss/pico": "^1.5.7",
+		"marked": "^15.0.12",
+		"mdsvex": "^0.12.6"
 	}
 }
