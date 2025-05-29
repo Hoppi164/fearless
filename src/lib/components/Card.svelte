@@ -19,10 +19,15 @@
 
 	{#if type === 'word'}
 		<div class="word">{data}</div>
+	{:else if type === 'markdown'}
+		<p>{data}</p>
+		<!-- <div class="markdown" @bind:innerHTML={data} /> -->
 	{:else if type === 'image'}
 		<img class="image" src={data} alt={title} />
 	{:else if type === 'video'}
-		<video class="video" src={data} controls />
+		<video class="video" src={data} controls>
+			<track kind="captions" src="" label="English captions" />
+		</video>
 	{:else if type === 'exercise'}
 		<svelte:component this={data} class="exercise" />
 	{/if}

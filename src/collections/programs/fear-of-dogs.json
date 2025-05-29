@@ -4,11 +4,41 @@
 	"title": "Cynophobia",
 	"subtitle": "Fear Of Dogs",
 	"plan": [
-		{ "type": "word", "data": "Woof" },
-		{ "type": "word", "data": "Bark" },
-		{ "type": "word", "data": "Bite" },
-		{ "type": "image", "data": "/dog-cartoon-0.webp" },
-		{ "type": "image", "data": "/dog-cartoon-1.webp" },
-		{ "type": "image", "data": "/dog-cartoon-2.webp" }
+		{
+			"type": "word",
+			"data": "Woof"
+		},
+		{
+			"type": "word",
+			"data": "Bark"
+		},
+		{
+			"type": "word",
+			"data": "Bite"
+		},
+		{
+			"type": "markdown",
+			"data": "/markdown/dog-1.md"
+		},
+		{
+			"type": "image",
+			"data": "/images/dog-cartoon-0.webp"
+		},
+		{
+			"type": "image",
+			"data": "/images/dog-cartoon-1.webp"
+		},
+		{
+			"type": "image",
+			"data": "/images/dog-cartoon-2.webp"
+		},
+		{
+			"type": "video",
+			"data": "/videos/dog-1.mp4"
+		},
+		{
+			"type": "video",
+			"data": "/videos/dog-2.mp4"
+		}
 	]
 }
