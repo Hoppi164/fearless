@@ -31,6 +31,7 @@
 	"type": "module",
 	"dependencies": {
 		"@picocss/pico": "^2.1.1",
-		"svelte-markdown": "^0.4.1"
+		"svelte-markdown": "^0.4.1",
+		"theme-toggles": "^4.10.1"
 	}
 }

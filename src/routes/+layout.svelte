@@ -1,7 +1,7 @@
 <script>
 	import '@picocss/pico/css/pico.css';
 	import { themeName } from '$lib/stores/ThemeStore.js';
-	import ToggleThemeButton from '$lib/components/toggleThemeButton.svelte';
+	import ToggleThemeButton from '$lib/components/ToggleThemeButton.svelte';
 	/**
 	 * @typedef {Object} Props
 	 * @property {import('svelte').Snippet} [children]
@@ -30,7 +30,7 @@
 
 <style>
 	#main-content {
-		background-color: var(--background-color);
+		background-color: var(--pico-background-color);
 		height: 100%;
 		min-height: 100vh;
 	}
