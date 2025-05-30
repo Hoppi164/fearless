@@ -31,8 +31,12 @@ export default [
 				extraFileExtensions: ['.svelte'],
 				ecmaVersion: 'latest',
 				sourceType: 'module'
+			},
+			globals: {
+				fetch: 'readonly'
 			}
 		},
+		processor: svelte.processors.svelte, // ✅ REQUIRED to support inline directives
 		rules: {
 			...svelte.configs.recommended.rules
 		}

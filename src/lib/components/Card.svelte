@@ -1,5 +1,6 @@
 <script>
-	import SvelteMarkdown from 'svelte-markdown';
+	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 
 	/**
 	 * @typedef {Object} Props
@@ -20,10 +21,12 @@
 				try {
 					const res = await fetch(data);
 					if (!res.ok) throw new Error(res.statusText);
-					markdownContent = await res.text();
+					const raw = await res.text();
+					const html = await marked.parse(raw);
+					markdownContent = DOMPurify.sanitize(html);
 				} catch (e) {
 					const message = e instanceof Error ? e.message : String(e);
-					markdownContent = `Error loading markdown: ${message}`;
+					markdownContent = `<p>Error loading markdown: ${message}</p>`;
 				}
 			})();
 		} else {
@@ -47,7 +50,8 @@
 		<div class="word">{data}</div>
 	{:else if type === 'markdown'}
 		{#if markdownContent}
-			<SvelteMarkdown source={markdownContent} />
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+			<div class="markdown">{@html markdownContent}</div>
 		{:else}
 			<p>Loading content...</p>
 		{/if}
@@ -99,11 +103,8 @@
 		border-radius: 0.5rem;
 		margin: 1rem 0;
 	}
-	/* .exercise {
+	.markdown {
 		width: 100%;
-		margin: 1rem 0;
-		background: #f9f9f9;
-		padding: 1rem;
-		border-radius: 0.5rem;
-	} */
+		text-align: left;
+	}
 </style>
