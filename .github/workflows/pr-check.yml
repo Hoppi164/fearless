@@ -3,6 +3,10 @@ name: PR Checks
 on:
   pull_request:
     branches: ['*']
+  push:
+    branches:
+      - master
+      - develop
 
 jobs:
   setup:
