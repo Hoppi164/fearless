@@ -49,7 +49,7 @@
 		{#if markdownContent}
 			<SvelteMarkdown source={markdownContent} />
 		{:else}
-			<p>Loading markdown...</p>
+			<p>Loading content...</p>
 		{/if}
 	{:else if type === 'image'}
 		<img class="image" src={data} alt={title} />
@@ -57,9 +57,6 @@
 		<video class="video" src={data} controls>
 			<track kind="captions" src="" label="English captions" />
 		</video>
-		<!-- {:else if type === 'exercise'}
-		<svelte:component this={data} class="exercise" />
-	{/if} -->
 	{:else}
 		<p>Unsupported type: {type}</p>
 	{/if}
