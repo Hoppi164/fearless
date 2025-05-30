@@ -37,6 +37,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}
+
       - name: Build project
         run: npm run build
 
@@ -66,7 +67,7 @@ jobs:
           echo "<details>" >> $GITHUB_STEP_SUMMARY
           echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat lint-output.txt >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh lint-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
@@ -104,7 +105,7 @@ jobs:
           echo "<details>" >> $GITHUB_STEP_SUMMARY
           echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat svelte-check-output.txt >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh svelte-check-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
@@ -144,7 +145,7 @@ jobs:
           echo "<details>" >> $GITHUB_STEP_SUMMARY
           echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat unit-test-output.txt >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh unit-test-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
@@ -171,6 +172,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
       - name: Run Playwright
         run: |
           npx playwright install --with-deps
@@ -190,7 +192,7 @@ jobs:
           echo "<details>" >> $GITHUB_STEP_SUMMARY
           echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat playwright-output.txt >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh playwright-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
