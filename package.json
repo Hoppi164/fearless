@@ -12,7 +12,8 @@
 		"test:e2e": "playwright test -- --headed",
 		"test:unit": "vitest",
 		"lint": "prettier . --check . && eslint .",
-		"format": "prettier . --write ."
+		"format": "prettier . --write .",
+		"precommit": "npm run format && npm run lint && npm run check"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.52.0",
