@@ -37,6 +37,8 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}
+      - name: Build project
+        run: npm run build
 
   lint:
     name: 🧹 Lint Code
@@ -124,9 +126,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - name: Build project
-        run: npm run build
-
       - name: Run Unit Tests
         run: |
           npm run test:unit -- --coverage 2>&1 | tee unit-test-output.txt
@@ -172,10 +171,6 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-
-      - name: Build project
-        run: npm run build
-          
       - name: Run Playwright
         run: |
           npx playwright install --with-deps
@@ -191,7 +186,7 @@ jobs:
 
       - name: Add E2E Test summary to job summary
         run: |
-          echo "### 🧪 E2E Tests (${matrix.browser}) completed" >> $GITHUB_STEP_SUMMARY
+          echo "### 🧪 E2E Tests (${{ matrix.browser }}) completed" >> $GITHUB_STEP_SUMMARY
           echo "<details>" >> $GITHUB_STEP_SUMMARY
           echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
