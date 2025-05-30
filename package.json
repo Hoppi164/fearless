@@ -30,6 +30,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@picocss/pico": "^2.1.1"
+		"@picocss/pico": "^2.1.1",
+		"svelte-markdown": "^0.4.1"
 	}
 }

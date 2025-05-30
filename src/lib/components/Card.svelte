@@ -1,4 +1,6 @@
 <script>
+	import SvelteMarkdown from 'svelte-markdown';
+
 	/**
 	 * @typedef {Object} Props
 	 * @property {string} [title]
@@ -10,6 +12,24 @@
 
 	/** @type {Props} */
 	let { title = '', subtitle = '', tutorial = '', type = '', data = '' } = $props();
+	let markdownContent = $state('');
+
+	$effect(() => {
+		if (type === 'markdown' && data) {
+			(async () => {
+				try {
+					const res = await fetch(data);
+					if (!res.ok) throw new Error(res.statusText);
+					markdownContent = await res.text();
+				} catch (e) {
+					const message = e instanceof Error ? e.message : String(e);
+					markdownContent = `Error loading markdown: ${message}`;
+				}
+			})();
+		} else {
+			markdownContent = '';
+		}
+	});
 </script>
 
 <div class="card">
@@ -26,8 +46,11 @@
 	{#if type === 'word'}
 		<div class="word">{data}</div>
 	{:else if type === 'markdown'}
-		<p>{data}</p>
-		<!-- <div class="markdown" @bind:innerHTML={data} /> -->
+		{#if markdownContent}
+			<SvelteMarkdown source={markdownContent} />
+		{:else}
+			<p>Loading markdown...</p>
+		{/if}
 	{:else if type === 'image'}
 		<img class="image" src={data} alt={title} />
 	{:else if type === 'video'}
