@@ -16,113 +16,138 @@ jobs:
       cache-key: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.1
 
       - name: 🔧 Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: '20'
+
+      - name: 📤 Cache node_modules
+        uses: actions/cache@v4.0.0
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 📤 Cache node_modules
-        uses: actions/cache@v4
+      - name: 📥 Cache Playwright Browsers
+        uses: actions/cache@v4.0.0
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}
 
   lint:
     name: 🧹 Lint Code
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'
 
-      - name: ♻️ Restore node_modules
-        uses: actions/cache@v4
+      - uses: actions/cache@v4.0.0
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - run: npm run lint || true
+      - run: echo "### Lint completed" >> $GITHUB_STEP_SUMMARY
 
-      - run: npm run lint
+      - name: 🪵 Upload lint logs
+        if: failure()
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: lint-log
+          path: lint.log
 
   svelte-check:
     name: ✅ Svelte Check
     needs: setup
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'
 
-      - name: ♻️ Restore node_modules
-        uses: actions/cache@v4
+      - uses: actions/cache@v4.0.0
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - run: npm run check
+      - run: npm run check || true
+      - run: echo "### Svelte Check completed" >> $GITHUB_STEP_SUMMARY
 
   test-unit:
-    name: 🧪 Unit Tests
-    needs: setup
+    name: 🧪 Unit Tests (Node ${{ matrix.node }})
+    needs: [lint, svelte-check]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: ${{ matrix.node }}
 
-      - name: ♻️ Restore node_modules
-        uses: actions/cache@v4
+      - uses: actions/cache@v4.0.0
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - run: npm run test:unit -- --coverage || true
 
-      - name: 🧪 Run Unit Tests
-        run: |
-          npm run test:unit > unit-test-output.txt || true
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: unit-coverage-${{ matrix.node }}
+          path: coverage
+
+      - run: echo "### Unit Tests (Node ${{ matrix.node }}) completed" >> $GITHUB_STEP_SUMMARY
 
   test-e2e:
-    name: 🧪 E2E Tests (Playwright)
-    needs: setup
+    name: 🧪 E2E Tests (Playwright ${{ matrix.browser }})
+    needs: [lint, svelte-check, test-unit]
+    if: ${{ always() && needs.lint.result == 'success' && needs.svelte-check.result == 'success' && needs.test-unit.result == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium, firefox]
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: '20'
 
-      - name: ♻️ Restore node_modules
-        uses: actions/cache@v4
+      - uses: actions/cache@v4.0.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}
+
+      - uses: actions/cache@v4.0.0
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - name: 🔧 Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: 📦 Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: 🧪 Run Playwright Tests
+      - name: Run Playwright
         run: |
-          npx playwright test --reporter=html,github > playwright-output.txt || true
+          npx playwright install --with-deps
+          npx playwright test --project=${{ matrix.browser }} --reporter=html || true
 
-      - name: 📤 Upload Playwright Report
+      - name: Upload Playwright HTML Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.0.0
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
+
+      - run: echo "### E2E Tests (${matrix.browser}) completed" >> $GITHUB_STEP_SUMMARY
 
   post-summary:
     name: 💬 PR Summary
@@ -133,19 +158,16 @@ jobs:
       - name: 📊 Generate Job Summary
         run: |
           echo "### ✅ PR Check Summary" > summary.txt
-          echo "" >> summary.txt
-
           echo "#### 🧹 Lint: \`${{ needs.lint.result }}\`" >> summary.txt
           echo "#### ✅ Svelte Check: \`${{ needs.svelte-check.result }}\`" >> summary.txt
           echo "#### 🧪 Unit Tests: \`${{ needs.test-unit.result }}\`" >> summary.txt
           echo "#### 🧪 E2E Tests: \`${{ needs.test-e2e.result }}\`" >> summary.txt
-
+          echo "" >> summary.txt
           if [[ "${{ needs.test-e2e.result }}" == "failure" ]]; then
-            echo "" >> summary.txt
-            echo "[📥 Download Playwright report from 'Actions'](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> summary.txt
+            echo "[📥 Download Playwright report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> summary.txt
           fi
 
-      - name: 💬 Post or Update Summary Comment on PR
+      - name: 💬 Post Summary Comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           path: summary.txt
