@@ -195,27 +195,3 @@ jobs:
           bash scripts/strip-ansi.sh playwright-output.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-  post-summary:
-    name: 💬 PR Summary
-    needs: [lint, svelte-check, test-unit, test-e2e]
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📊 Generate Job Summary
-        run: |
-          echo "### ✅ PR Check Summary" > summary.txt
-          echo "#### 🧹 Lint: \`${{ needs.lint.result }}\`" >> summary.txt
-          echo "#### ✅ Svelte Check: \`${{ needs.svelte-check.result }}\`" >> summary.txt
-          echo "#### 🧪 Unit Tests: \`${{ needs.test-unit.result }}\`" >> summary.txt
-          echo "#### 🧪 E2E Tests: \`${{ needs.test-e2e.result }}\`" >> summary.txt
-          echo "" >> summary.txt
-          if [[ "${{ needs.test-e2e.result }}" == "failure" ]]; then
-            echo "[📥 Download Playwright report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> summary.txt
-          fi
-
-      - name: 💬 Post Summary Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          path: summary.txt
-          header: pr-check-summary
