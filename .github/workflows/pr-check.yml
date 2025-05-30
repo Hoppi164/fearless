@@ -156,7 +156,7 @@ jobs:
           name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
 
-      - run: echo "### E2E Tests (${matrix.browser}) completed" >> $GITHUB_STEP_SUMMARY
+      - run: echo "### E2E Tests (${{ matrix.browser }}) completed" >> $GITHUB_STEP_SUMMARY
 
   post-summary:
     name: 💬 PR Summary
