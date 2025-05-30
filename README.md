@@ -88,3 +88,5 @@ npm run test
 - Unit Tests by ['Vitest'](https://vitest.dev/)
 - End To End Tests by ['Playwright'](https://playwright.dev/)
 - Data stored on Device (currently no database required)
+
+test
