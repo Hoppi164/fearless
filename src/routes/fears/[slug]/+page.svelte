@@ -1,8 +1,13 @@
 <script>
-	/** @type {import('./$types').PageData} */
-	export let data;
-	const program = data.program;
 	import Card from '$lib/components/Card.svelte';
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('./$types').PageData} data
+	 */
+
+	/** @type {Props} */
+	let { data } = $props();
+	const program = data.program;
 </script>
 
 <div>

@@ -1,9 +1,15 @@
 <script>
-	export let title = '';
-	export let subtitle = '';
-	export let tutorial = '';
-	export let type = '';
-	export let data = '';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [title]
+	 * @property {string} [subtitle]
+	 * @property {string} [tutorial]
+	 * @property {string} [type]
+	 * @property {string} [data]
+	 */
+
+	/** @type {Props} */
+	let { title = '', subtitle = '', tutorial = '', type = '', data = '' } = $props();
 </script>
 
 <div class="card">

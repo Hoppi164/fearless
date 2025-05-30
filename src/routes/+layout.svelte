@@ -2,6 +2,13 @@
 	import '@picocss/pico/css/pico.css';
 	import { themeName } from '$lib/stores/ThemeStore.js';
 	import ToggleThemeButton from '$lib/components/toggleThemeButton.svelte';
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let { children } = $props();
 </script>
 
 <div id="main-content" data-theme={$themeName}>
@@ -17,7 +24,7 @@
 			</ul>
 		</nav>
 
-		<slot />
+		{@render children?.()}
 	</div>
 </div>
 
