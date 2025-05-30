@@ -29,8 +29,6 @@ Example of program data structure:
 		{#each program.plan as step, index}
 			<Card
 				title={step.title || `Step ${index + 1}`}
-				subtitle={step.subtitle || ''}
-				tutorial={step.tutorial || ''}
 				type={step.type || 'word'}
 				data={step.data || ''}
 			/>

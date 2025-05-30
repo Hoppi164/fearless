@@ -28,8 +28,11 @@
 		<video class="video" src={data} controls>
 			<track kind="captions" src="" label="English captions" />
 		</video>
-	{:else if type === 'exercise'}
+		<!-- {:else if type === 'exercise'}
 		<svelte:component this={data} class="exercise" />
+	{/if} -->
+	{:else}
+		<p>Unsupported type: {type}</p>
 	{/if}
 </div>
 
