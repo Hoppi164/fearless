@@ -16,15 +16,15 @@ jobs:
       cache-key: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: 🔧 Set up Node.js
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: 📤 Cache node_modules
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
@@ -33,32 +33,47 @@ jobs:
         run: npm ci
 
       - name: 📥 Cache Playwright Browsers
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}
+
+      - name: Build project
+        run: npm run build
 
   lint:
     name: 🧹 Lint Code
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - run: npm run lint || true
-      - run: echo "### Lint completed" >> $GITHUB_STEP_SUMMARY
+      - name: Run Lint
+        run: |
+          npm run lint 2>&1 | tee lint-output.txt
+        continue-on-error: true
+
+      - name: Add Lint summary to job summary
+        run: |
+          echo "### 🧹 Lint completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh lint-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
       - name: 🪵 Upload lint logs
         if: failure()
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-artifact@v4
         with:
           name: lint-log
           path: lint.log
@@ -69,18 +84,30 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - run: npm run check || true
-      - run: echo "### Svelte Check completed" >> $GITHUB_STEP_SUMMARY
+      - name: Run Svelte Check
+        run: |
+          npm run check 2>&1 | tee svelte-check-output.txt
+        continue-on-error: true
+
+      - name: Add Svelte Check summary to job summary
+        run: |
+          echo "### ✅ Svelte Check completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh svelte-check-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   test-unit:
     name: 🧪 Unit Tests (Node ${{ matrix.node }})
@@ -90,26 +117,37 @@ jobs:
       matrix:
         node: [18, 20]
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - run: npm run test:unit -- --coverage || true
+      - name: Run Unit Tests
+        run: |
+          npm run test:unit -- --coverage 2>&1 | tee unit-test-output.txt
+        continue-on-error: true
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-artifact@v4
         with:
           name: unit-coverage-${{ matrix.node }}
           path: coverage
 
-      - run: echo "### Unit Tests (Node ${{ matrix.node }}) completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add Unit Test summary to job summary
+        run: |
+          echo "### 🧪 Unit Tests (Node ${{ matrix.node }}) completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '<pre>' >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh unit-test-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '</pre>' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   test-e2e:
     name: 🧪 E2E Tests (Playwright ${{ matrix.browser }})
@@ -118,19 +156,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [chromium, firefox]
+        browser: [chromium, firefox, webkit]
     steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-node@v4.0.2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}
 
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
@@ -138,16 +176,25 @@ jobs:
       - name: Run Playwright
         run: |
           npx playwright install --with-deps
-          npx playwright test --project=${{ matrix.browser }} --reporter=html || true
+          npm run test:e2e-ci --project=${{ matrix.browser }} 2>&1 | tee playwright-output.txt
+        continue-on-error: true
 
       - name: Upload Playwright HTML Report
         if: always()
-        uses: actions/upload-artifact@v4.0.0
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
 
-      - run: echo "### E2E Tests (${matrix.browser}) completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add E2E Test summary to job summary
+        run: |
+          echo "### 🧪 E2E Tests (${{ matrix.browser }}) completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          bash scripts/strip-ansi.sh playwright-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   post-summary:
     name: 💬 PR Summary
