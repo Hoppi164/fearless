@@ -70,11 +70,11 @@
 		border-radius: 0.5rem;
 		margin: 1rem 0;
 	}
-	.exercise {
+	/* .exercise {
 		width: 100%;
 		margin: 1rem 0;
 		background: #f9f9f9;
 		padding: 1rem;
 		border-radius: 0.5rem;
-	}
+	} */
 </style>

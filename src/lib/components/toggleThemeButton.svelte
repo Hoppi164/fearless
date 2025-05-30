@@ -2,7 +2,13 @@
 	import { toggleDarkMode } from '$lib/stores/ThemeStore.js';
 </script>
 
-<div class="clickable-button" on:click={toggleDarkMode} on:keypress={toggleDarkMode}>
+<div
+	class="clickable-button"
+	role="button"
+	tabindex="0"
+	on:click={toggleDarkMode}
+	on:keypress={toggleDarkMode}
+>
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 		<path
 			fill-rule="nonzero"
