@@ -53,10 +53,20 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - run: npm run lint
+      - name: Run Lint
+        run: |
+          npm run lint 2>&1 | tee lint-output.txt
         continue-on-error: true
 
-      - run: echo "### Lint completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add Lint summary to job summary
+        run: |
+          echo "### 🧹 Lint completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat lint-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
       - name: 🪵 Upload lint logs
         if: failure()
@@ -81,10 +91,20 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - run: npm run check
+      - name: Run Svelte Check
+        run: |
+          npm run check 2>&1 | tee svelte-check-output.txt
         continue-on-error: true
 
-      - run: echo "### Svelte Check completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add Svelte Check summary to job summary
+        run: |
+          echo "### ✅ Svelte Check completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat svelte-check-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   test-unit:
     name: 🧪 Unit Tests (Node ${{ matrix.node }})
@@ -107,7 +127,9 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - run: npm run test:unit -- --coverage
+      - name: Run Unit Tests
+        run: |
+          npm run test:unit -- --coverage 2>&1 | tee unit-test-output.txt
         continue-on-error: true
 
       - name: Upload coverage report
@@ -117,7 +139,15 @@ jobs:
           name: unit-coverage-${{ matrix.node }}
           path: coverage
 
-      - run: echo "### Unit Tests (Node ${{ matrix.node }}) completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add Unit Test summary to job summary
+        run: |
+          echo "### 🧪 Unit Tests (Node ${{ matrix.node }}) completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat unit-test-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   test-e2e:
     name: 🧪 E2E Tests (Playwright ${{ matrix.browser }})
@@ -146,7 +176,7 @@ jobs:
       - name: Run Playwright
         run: |
           npx playwright install --with-deps
-          npx playwright test --project=${{ matrix.browser }} --reporter=html
+          npx playwright test --project=${{ matrix.browser }} --reporter=html 2>&1 | tee playwright-output.txt
         continue-on-error: true
 
       - name: Upload Playwright HTML Report
@@ -156,7 +186,15 @@ jobs:
           name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
 
-      - run: echo "### E2E Tests (${{ matrix.browser }}) completed" >> $GITHUB_STEP_SUMMARY
+      - name: Add E2E Test summary to job summary
+        run: |
+          echo "### 🧪 E2E Tests (${matrix.browser}) completed" >> $GITHUB_STEP_SUMMARY
+          echo "<details>" >> $GITHUB_STEP_SUMMARY
+          echo "<summary>See Details</summary>" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat playwright-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
 
   post-summary:
     name: 💬 PR Summary
