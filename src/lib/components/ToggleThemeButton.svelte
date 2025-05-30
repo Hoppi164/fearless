@@ -10,7 +10,6 @@
 	onclick={toggleDarkMode}
 	onkeypress={toggleDarkMode}
 >
-
 	<div
 		class="theme-toggle {$isDarkMode ? 'theme-toggle--toggled' : ''}"
 		title="Toggle theme"
@@ -52,7 +51,7 @@
 			fill 0.5s,
 			background-color 0.5s;
 	}
-	.clickable-button{
+	.clickable-button {
 		height: 3em;
 		width: 3em;
 		border-radius: 100%;
