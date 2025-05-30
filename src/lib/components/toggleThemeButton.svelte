@@ -18,6 +18,8 @@
 		background-color: var(--background-color);
 		border-radius: 50%;
 		fill: var(--h1-color);
-		transition: fill 0.5s, background-color 0.5s;
+		transition:
+			fill 0.5s,
+			background-color 0.5s;
 	}
 </style>
